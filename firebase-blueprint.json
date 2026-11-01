@@ -1,0 +1,40 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile metadata for cloud sync",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase user authentication UID" },
+        "email": { "type": "string", "description": "User email address" },
+        "displayName": { "type": "string", "description": "User display name" },
+        "createdAt": { "type": "number", "description": "Creation timestamp in milliseconds" },
+        "updatedAt": { "type": "number", "description": "Last updated timestamp in milliseconds" }
+      },
+      "required": ["uid", "email"]
+    },
+    "UserDoc": {
+      "title": "UserDoc",
+      "description": "App data document, archived report, indicator, or evidence photo for multi-device sync",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique document identifier or key" },
+        "userId": { "type": "string", "description": "Owner user UID" },
+        "kind": { "type": "string", "description": "Document kind (profile, record, photo, meta)" },
+        "data": { "type": "object", "description": "Payload document content" },
+        "updatedAt": { "type": "number", "description": "Last update timestamp" }
+      },
+      "required": ["id", "userId", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User account document"
+    },
+    "/users/{userId}/docs/{docId}": {
+      "schema": "UserDoc",
+      "description": "Synced records, reports, photos, and center profile"
+    }
+  }
+}

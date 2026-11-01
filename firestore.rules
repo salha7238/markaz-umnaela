@@ -1,0 +1,59 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Default deny all access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // User profile document
+    match /users/{userId} {
+      allow get: if isSignedIn() && request.auth.uid == userId && isValidId(userId);
+      allow list: if false;
+      allow create: if isSignedIn()
+                    && request.auth.uid == userId
+                    && isValidId(userId)
+                    && incoming().uid == request.auth.uid
+                    && incoming().email is string;
+      allow update: if isSignedIn()
+                    && request.auth.uid == userId
+                    && isValidId(userId)
+                    && incoming().uid == request.auth.uid;
+      allow delete: if isSignedIn() && request.auth.uid == userId && isValidId(userId);
+
+      // App documents subcollection (reports, archive records, photos, indicators)
+      match /docs/{docId} {
+        allow get: if isSignedIn() && request.auth.uid == userId && isValidId(userId) && isValidId(docId);
+        allow list: if isSignedIn() && request.auth.uid == userId && isValidId(userId);
+        allow create: if isSignedIn()
+                      && request.auth.uid == userId
+                      && isValidId(userId)
+                      && isValidId(docId)
+                      && incoming().userId == request.auth.uid;
+        allow update: if isSignedIn()
+                      && request.auth.uid == userId
+                      && isValidId(userId)
+                      && isValidId(docId)
+                      && incoming().userId == request.auth.uid;
+        allow delete: if isSignedIn() && request.auth.uid == userId && isValidId(userId) && isValidId(docId);
+      }
+    }
+  }
+}

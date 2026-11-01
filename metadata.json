@@ -1,0 +1,6 @@
+{
+  "name": "مولّد تقارير مراكز الموهوبين",
+  "description": "منصة متكاملة لتوليد وإدارة تقارير مراكز وبرامج الموهوبين الشهرية والختامية والإحصائية وتصديرها بصيغ PDF و Word و Excel.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
